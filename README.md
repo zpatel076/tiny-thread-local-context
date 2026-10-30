@@ -27,3 +27,10 @@ threading.Thread(target=worker).start()
 ## The awkward edge
 
 `snapshot()` and `restore()` perform shallow copies. That is fine for strings, ints, and other immutable identifiers, but mutable values (lists, dicts) are shared by reference between threads. If you stash a mutable object in the context and mutate it from a worker, the parent sees the mutation. Put immutables in the context, or copy mutables yourself before storing them.
+
+## Design notes
+
+The window stores values eagerly rather than keeping running aggregates. Running
+sums drift with floating point over long streams, and recomputing from a small
+buffer is cheap enough that the drift is not worth the speed.
+
